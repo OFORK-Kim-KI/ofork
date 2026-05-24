@@ -122,6 +122,10 @@ Core.Form.ErrorTooltips = (function (TargetNS) {
             TooltipPosition = TonguePosition;
         }
 
+        if (!$Element || !$Element.length) {
+            return;
+        }
+
         if (!$TooltipContainer.length) {
             $('body').append('<div id="' + TooltipContainerID + '" class="TooltipContainer"></div>');
             $TooltipContainer = $('#' + TooltipContainerID);
@@ -133,6 +137,9 @@ Core.Form.ErrorTooltips = (function (TargetNS) {
          */
         if (($(document).width() - $Element.offset().left) < 250) {
             TongueClass = 'TongueRight';
+        }
+        else {
+            TongueClass = 'TongueLeft';
         }
 
         /*
@@ -205,29 +212,24 @@ Core.Form.ErrorTooltips = (function (TargetNS) {
         $Element.off('blur.Tooltip');
     };
 
-    /**
-     * @private
-     * @name ShowRTETooltip
-     * @memberof Core.Form.ErrorTooltips
-     * @function
-     * @param {Object} Event - The event object.
-     * @description
-     *      This function shows the tooltip for a rich text editor.
-     */
-    function ShowRTETooltip(Event) {
-        TargetNS.ShowTooltip($('#cke_' + Event.listenerData.ElementID + ' .cke_contents'), Event.listenerData.Message);
-    }
+    function GetRTEElement($Element) {
+        var $RTE;
 
-    /**
-     * @private
-     * @name RemoveRTETooltip
-     * @memberof Core.Form.ErrorTooltips
-     * @function
-     * @description
-     *      This function remove the tooltip from a rich text editor.
-     */
-    function RemoveRTETooltip() {
-        TargetNS.HideTooltip();
+        if (
+            Core.UI
+            && Core.UI.RichTextEditor
+            && typeof Core.UI.RichTextEditor.GetRTE === 'function'
+        ) {
+            $RTE = Core.UI.RichTextEditor.GetRTE($Element);
+
+            if ($RTE && $RTE.length) {
+                return $RTE.find('.ck-editor__editable, .ck-content').first().length
+                    ? $RTE.find('.ck-editor__editable, .ck-content').first()
+                    : $RTE;
+            }
+        }
+
+        return $Element;
     }
 
     /**
@@ -240,9 +242,57 @@ Core.Form.ErrorTooltips = (function (TargetNS) {
      *      This function initializes the necessary stuff for a tooltip in a rich text editor.
      */
     TargetNS.InitRTETooltip = function ($Element, Message) {
-        var ElementID = $Element.attr('id');
-        CKEDITOR.instances[ElementID].on('focus', ShowRTETooltip, null, {ElementID: ElementID, Message: Message});
-        CKEDITOR.instances[ElementID].on('blur', RemoveRTETooltip, null, ElementID);
+        var InstanceData,
+            Editor,
+            ElementID = $Element.attr('id'),
+            $RTEElement;
+
+        if (!ElementID) {
+            return;
+        }
+
+        if (
+            !Core.UI
+            || !Core.UI.RichTextEditor
+            || typeof Core.UI.RichTextEditor.GetInstanceData !== 'function'
+        ) {
+            return;
+        }
+
+        InstanceData = Core.UI.RichTextEditor.GetInstanceData(ElementID);
+
+        if (!InstanceData || !InstanceData.Editor) {
+            Core.App.Subscribe('Event.UI.RichTextEditor.InstanceReady', function () {
+                TargetNS.InitRTETooltip($Element, Message);
+            });
+            return;
+        }
+
+        Editor = InstanceData.Editor;
+        $RTEElement = GetRTEElement($Element);
+
+        $RTEElement
+            .off('focus.Tooltip')
+            .on('focus.Tooltip', function () {
+                TargetNS.ShowTooltip(GetRTEElement($Element), Message);
+            });
+
+        $RTEElement
+            .off('blur.Tooltip')
+            .on('blur.Tooltip', TargetNS.HideTooltip);
+
+        if (Editor.editing && Editor.editing.view && Editor.editing.view.document) {
+            Editor.editing.view.document.off('focus:tooltip');
+            Editor.editing.view.document.off('blur:tooltip');
+
+            Editor.editing.view.document.on('focus:tooltip', function () {
+                TargetNS.ShowTooltip(GetRTEElement($Element), Message);
+            });
+
+            Editor.editing.view.document.on('blur:tooltip', function () {
+                TargetNS.HideTooltip();
+            });
+        }
     };
 
     /**
@@ -254,9 +304,39 @@ Core.Form.ErrorTooltips = (function (TargetNS) {
      *      This function removes the tooltip in a rich text editor.
      */
     TargetNS.RemoveRTETooltip = function ($Element) {
-        var ElementID = $Element.attr('id');
-        CKEDITOR.instances[ElementID].removeListener('focus', ShowRTETooltip);
-        CKEDITOR.instances[ElementID].removeListener('blur', RemoveRTETooltip);
+        var InstanceData,
+            Editor,
+            ElementID = $Element.attr('id'),
+            $RTEElement;
+
+        if (!ElementID) {
+            return;
+        }
+
+        $RTEElement = GetRTEElement($Element);
+
+        if ($RTEElement && $RTEElement.length) {
+            $RTEElement.off('focus.Tooltip');
+            $RTEElement.off('blur.Tooltip');
+        }
+
+        if (
+            Core.UI
+            && Core.UI.RichTextEditor
+            && typeof Core.UI.RichTextEditor.GetInstanceData === 'function'
+        ) {
+            InstanceData = Core.UI.RichTextEditor.GetInstanceData(ElementID);
+
+            if (InstanceData && InstanceData.Editor) {
+                Editor = InstanceData.Editor;
+
+                if (Editor.editing && Editor.editing.view && Editor.editing.view.document) {
+                    Editor.editing.view.document.off('focus:tooltip');
+                    Editor.editing.view.document.off('blur:tooltip');
+                }
+            }
+        }
+
         TargetNS.HideTooltip();
     };
 

@@ -285,12 +285,16 @@ Core.Agent.TicketAction = (function (TargetNS) {
         var Content = '',
             LastValue = $TemplateSelect.data('LastValue') || '';
 
-        // Fallback for non-richtext content
-        Content = $('#' + FieldName).val();
+        // Fallback for non-richtext content.
+        Content = $('#' + Core.App.EscapeSelector(FieldName)).val() || '';
 
-        // get RTE content
-        if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances[FieldName]) {
-            Content = CKEDITOR.instances[FieldName].getData();
+        // Get RTE content.
+        if (
+            Core.UI
+            && Core.UI.RichTextEditor
+            && Core.UI.RichTextEditor.HasInstance(FieldName)
+        ) {
+            Content = Core.UI.RichTextEditor.GetData(FieldName);
         }
 
         // if content already exists let user confirm to really overwrite that content with a template
@@ -306,7 +310,7 @@ Core.Agent.TicketAction = (function (TargetNS) {
             Callback();
             $TemplateSelect.data('LastValue', $TemplateSelect.val());
         }
-    }
+    };
 
     Core.Init.RegisterNamespace(TargetNS, 'APP_MODULE');
 

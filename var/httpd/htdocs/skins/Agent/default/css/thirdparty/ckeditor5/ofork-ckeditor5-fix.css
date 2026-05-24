@@ -1,0 +1,322 @@
+/* CKEditor 5 layout reset for OFORK Agent */
+
+.RichTextField .ck.ck-editor {
+    display: block !important;
+    width: 620px !important;
+    max-width: 620px !important;
+    box-sizing: border-box !important;
+}
+
+.RichTextField .ck.ck-editor *,
+.RichTextField .ck.ck-editor *::before,
+.RichTextField .ck.ck-editor *::after {
+    box-sizing: border-box;
+}
+
+.RichTextField .ck.ck-editor div {
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.RichTextField .ck.ck-editor__top,
+.RichTextField .ck.ck-sticky-panel,
+.RichTextField .ck.ck-sticky-panel__content {
+    display: block !important;
+    position: relative !important;
+    width: 620px !important;
+    max-width: 620px !important;
+    background: transparent !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    z-index: 10 !important;
+}
+
+.RichTextField .ck.ck-editor__main {
+    display: block !important;
+    width: 620px !important;
+    max-width: 620px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.RichTextField .ck.ck-toolbar {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    width: 620px !important;
+    max-width: 620px !important;
+    padding: 1px 3px !important;
+    margin: 0 !important;
+    gap: 0 !important;
+    border: 1px solid #c4c4c4 !important;
+    border-bottom: none !important;
+    background: #f3f3f3 !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+.RichTextField .ck.ck-toolbar__items {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+    background: transparent !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+.RichTextField .ck.ck-toolbar div {
+    padding: 0 !important;
+}
+
+.RichTextField .ck.ck-toolbar__separator {
+    display: inline-block !important;
+    width: 1px !important;
+    height: 24px !important;
+    margin: 0 4px !important;
+    padding: 0 !important;
+    background: #c4c4c4 !important;
+}
+
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-button,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-button.ck-on,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-button.ck-off,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-dropdown > .ck.ck-dropdown__button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    min-width: 24px !important;
+    max-width: none !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    max-height: 24px !important;
+    padding: 2px 4px !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+}
+
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-button:hover,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-dropdown > .ck.ck-dropdown__button:hover {
+    border-color: #bcbcbc !important;
+    background: #ebebeb !important;
+}
+
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-button .ck.ck-button__label,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-dropdown > .ck.ck-dropdown__button .ck.ck-button__label {
+    display: none !important;
+}
+
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-source-editing-button .ck.ck-button__label,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-heading-dropdown > .ck.ck-dropdown__button .ck.ck-button__label {
+    display: inline-block !important;
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+}
+
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-button svg.ck.ck-icon,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-dropdown > .ck.ck-dropdown__button svg.ck.ck-icon,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-button .ck.ck-icon,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-dropdown > .ck.ck-dropdown__button .ck.ck-icon,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-button .ck.ck-button__icon,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-dropdown > .ck.ck-dropdown__button .ck.ck-button__icon {
+    display: inline-block !important;
+    width: 14px !important;
+    min-width: 14px !important;
+    max-width: 14px !important;
+    height: 14px !important;
+    min-height: 14px !important;
+    max-height: 14px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
+}
+
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-button svg.ck.ck-icon *,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-dropdown > .ck.ck-dropdown__button svg.ck.ck-icon *,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-button .ck.ck-icon *,
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-dropdown > .ck.ck-dropdown__button .ck.ck-icon * {
+    vector-effect: none !important;
+}
+
+.RichTextField .ck.ck-toolbar > .ck-toolbar__items > .ck.ck-dropdown {
+    display: inline-flex !important;
+    position: relative !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.RichTextField .ck.ck-dropdown__panel {
+    z-index: 10000 !important;
+    overflow: visible !important;
+}
+
+.RichTextField .ck.ck-editor__editable,
+.RichTextField .ck.ck-editor__editable_inline,
+.RichTextField .ck.ck-editor__editable.ck-focused {
+    display: block !important;
+    width: 620px !important;
+    max-width: 620px !important;
+    height: 320px;
+    min-height: 320px !important;
+    max-height: none !important;
+    padding: 10px 14px !important;
+    border: 1px solid #c4c4c4 !important;
+    background: #fff !important;
+    color: #333;
+    font-size: 12px;
+    line-height: 1.4;
+    box-sizing: border-box !important;
+    resize: vertical !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+.RichTextField .ck.ck-content {
+    color: #333;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.RichTextField .ck.ck-content p,
+.RichTextField .ck.ck-content div,
+.RichTextField .ck.ck-content li {
+    color: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.RichTextField .ck.ck-content span {
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.RichTextField .ck.ck-content p {
+    margin: 0 0 1em 0;
+    padding: 0;
+}
+
+.RichTextField .ck.ck-content ul,
+.RichTextField .ck.ck-content ol {
+    margin: 0 0 1em 0;
+    padding-left: 28px;
+}
+
+.RichTextField .ck.ck-content li {
+    margin-left: 0;
+    padding-left: 4px;
+}
+
+.RichTextField .ck.ck-content a {
+    color: #0066cc;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.RichTextField .ck.ck-content a:hover,
+.RichTextField .ck.ck-content a:focus {
+    color: #004c99;
+    text-decoration: underline;
+}
+
+.RichTextField .ck.ck-content a:visited {
+    color: #551a8b;
+}
+
+.RichTextField .ck.ck-powered-by {
+    display: block !important;
+    right: auto !important;
+    left: 4px !important;
+    bottom: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: 180px !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    pointer-events: none !important;
+}
+
+.RichTextField .ck.ck-powered-by svg,
+.RichTextField .ck.ck-powered-by img {
+    width: auto !important;
+    max-width: 120px !important;
+    height: auto !important;
+    max-height: 28px !important;
+}
+
+/* CKEditor 5 balloon panels */
+.ck.ck-balloon-panel {
+    z-index: 10000 !important;
+}
+
+/* Only link dialog layout, not color dropdown buttons */
+.ck.ck-balloon-panel .ck-link-form label,
+.ck.ck-balloon-panel .ck-link-form .ck.ck-label {
+    float: none !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin: 0 0 3px 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    text-align: left !important;
+    color: #333 !important;
+    font-size: 12px !important;
+    line-height: 14px !important;
+    position: static !important;
+    transform: none !important;
+    display: block !important;
+}
+
+.ck.ck-balloon-panel .ck-link-form .ck-labeled-field-view {
+    display: block !important;
+    margin: 0 0 8px 0 !important;
+    padding: 0 !important;
+}
+
+.ck.ck-balloon-panel .ck-link-form .ck-labeled-field-view__input-wrapper {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.ck.ck-balloon-panel .ck-link-form input,
+.ck.ck-balloon-panel .ck-link-form .ck.ck-input {
+    display: block !important;
+    width: 100% !important;
+    min-width: 260px !important;
+    margin: 0 !important;
+    padding: 5px 7px !important;
+    color: #333 !important;
+    font-size: 12px !important;
+    line-height: 16px !important;
+    background: #fff !important;
+    box-sizing: border-box !important;
+}
+
+.ck.ck-balloon-panel .ck-link-form {
+    display: block !important;
+    min-width: 330px !important;
+    padding: 10px !important;
+}
+
+.ck.ck-balloon-panel .ck-link-form .ck-link-form__actions,
+.ck.ck-balloon-panel .ck-link-form .ck-form__actions {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+    margin-top: 8px !important;
+    padding: 0 !important;
+}

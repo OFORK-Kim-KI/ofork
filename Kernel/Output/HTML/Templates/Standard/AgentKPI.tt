@@ -31,7 +31,7 @@ $(document).ready(function(){
 
 //]]></script>
 [% END %]
-<div id="Filter" style="height: 80%; width: 90%;background-color:#f2f2f2;position:fixed;top:100px;z-index:100;display:none;margin:10px;padding:20px;box-shadow: 10px 20px 15px silver;border-radius: 20px;border-color: #8d8d8e;border-width: 1px;border-style: solid;">
+<div id="Filter" style="height: 80%; width: 90%;background-color:#f2f2f2;top:100px;z-index:100;display:none;margin:10px;padding:20px;box-shadow: 10px 20px 15px silver;border-radius: 20px;border-color: #8d8d8e;border-width: 1px;border-style: solid;">
 <button id="hide" style="margin-left:25px;">[% Translate("Hide filters") | html %]</button>
 
 <div class="MainBox ARIARoleMain FormScreen">

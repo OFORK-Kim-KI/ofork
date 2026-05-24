@@ -109,6 +109,24 @@ sub LoaderCreateAgentCSSCalls {
             push @FileList, @{ $CommonCSSList->{$Key} };
         }
 
+        # make sure CKEditor 5 CSS is loaded in the agent interface
+        {
+            my %Seen = map { $_ => 1 } @FileList;
+
+            CSSFILE:
+            for my $CSSFile (
+                'thirdparty/ckeditor5/ckeditor5.css',
+                'thirdparty/ckeditor5/ckeditor5-editor.css',
+                'thirdparty/ckeditor5/ckeditor5-content.css',
+                'thirdparty/ckeditor5/ofork-ckeditor5-fix.css',
+            ) {
+                next CSSFILE if $Seen{$CSSFile};
+
+                push @FileList, $CSSFile;
+                $Seen{$CSSFile} = 1;
+            }
+        }
+
         # get toolbar module css
         for my $Key ( sort keys %{$ToolbarModuleSettings} ) {
             if ( $ToolbarModuleSettings->{$Key}->{CSS} ) {
@@ -203,6 +221,8 @@ sub LoaderCreateAgentJSCalls {
     my $JSHome   = $ConfigObject->Get('Home') . '/var/httpd/htdocs/js';
     my $DoMinify = $ConfigObject->Get('Loader::Enabled::JS');
 
+    my %ViewFileList;
+
     {
         my @FileList;
 
@@ -211,15 +231,43 @@ sub LoaderCreateAgentJSCalls {
 
         KEY:
         for my $Key ( sort keys %{$CommonJSList} ) {
-            next KEY if $Key eq '100-CKEditor' && !$ConfigObject->Get('Frontend::RichText');
-            push @FileList, @{ $CommonJSList->{$Key} };
+
+            if ( $Key eq '100-CKEditor' ) {
+
+                FILE:
+                for my $File ( @{ $CommonJSList->{$Key} || [] } ) {
+                    next FILE if $ViewFileList{$File};
+
+                    $Self->_HandleJSList(
+                        List      => [$File],
+                        DoMinify  => 0,
+                        BlockName => 'CommonJS',
+                        JSHome    => $JSHome,
+                    );
+
+                    $ViewFileList{$File} = 1;
+                }
+
+                next KEY;
+            }
+
+            FILE:
+            for my $File ( @{ $CommonJSList->{$Key} || [] } ) {
+                next FILE if $ViewFileList{$File};
+
+                push @FileList, $File;
+                $ViewFileList{$File} = 1;
+            }
         }
 
         # get toolbar module js
         my $ToolbarModuleSettings = $ConfigObject->Get('Frontend::ToolBarModule');
         for my $Key ( sort keys %{$ToolbarModuleSettings} ) {
             if ( $ToolbarModuleSettings->{$Key}->{JavaScript} ) {
+                next if $ViewFileList{ $ToolbarModuleSettings->{$Key}->{JavaScript} };
+
                 push @FileList, $ToolbarModuleSettings->{$Key}->{JavaScript};
+                $ViewFileList{ $ToolbarModuleSettings->{$Key}->{JavaScript} } = 1;
             }
         }
 
@@ -229,7 +277,6 @@ sub LoaderCreateAgentJSCalls {
             BlockName => 'CommonJS',
             JSHome    => $JSHome,
         );
-
     }
 
     # now handle module specific JavaScript
@@ -244,7 +291,14 @@ sub LoaderCreateAgentJSCalls {
         MODULE:
         for my $Module ( sort keys %{$Setting} ) {
             next MODULE if ref $Setting->{$Module}->{JavaScript} ne 'ARRAY';
-            @FileList = ( @FileList, @{ $Setting->{$Module}->{JavaScript} || [] } );
+
+            FILE:
+            for my $File ( @{ $Setting->{$Module}->{JavaScript} || [] } ) {
+                next FILE if $ViewFileList{$File};
+
+                push @FileList, $File;
+                $ViewFileList{$File} = 1;
+            }
         }
 
         $Self->_HandleJSList(
@@ -253,7 +307,6 @@ sub LoaderCreateAgentJSCalls {
             BlockName => 'ModuleJS',
             JSHome    => $JSHome,
         );
-
     }
 
     return 1;
@@ -699,6 +752,8 @@ sub LoaderCreateCustomerJSCalls {
     my $JSHome   = $ConfigObject->Get('Home') . '/var/httpd/htdocs/js';
     my $DoMinify = $ConfigObject->Get('Loader::Enabled::JS');
 
+    my %ViewFileList;
+
     {
         my $CommonJSList = $ConfigObject->Get('Loader::Customer::CommonJS');
 
@@ -706,8 +761,33 @@ sub LoaderCreateCustomerJSCalls {
 
         KEY:
         for my $Key ( sort keys %{$CommonJSList} ) {
-            next KEY if $Key eq '100-CKEditor' && !$ConfigObject->Get('Frontend::RichText');
-            push @FileList, @{ $CommonJSList->{$Key} };
+
+            if ( $Key eq '100-CKEditor' ) {
+
+                FILE:
+                for my $File ( @{ $CommonJSList->{$Key} || [] } ) {
+                    next FILE if $ViewFileList{$File};
+
+                    $Self->_HandleJSList(
+                        List      => [$File],
+                        DoMinify  => 0,
+                        BlockName => 'CommonJS',
+                        JSHome    => $JSHome,
+                    );
+
+                    $ViewFileList{$File} = 1;
+                }
+
+                next KEY;
+            }
+
+            FILE:
+            for my $File ( @{ $CommonJSList->{$Key} || [] } ) {
+                next FILE if $ViewFileList{$File};
+
+                push @FileList, $File;
+                $ViewFileList{$File} = 1;
+            }
         }
 
         $Self->_HandleJSList(
@@ -716,7 +796,6 @@ sub LoaderCreateCustomerJSCalls {
             BlockName => 'CommonJS',
             JSHome    => $JSHome,
         );
-
     }
 
     # now handle module specific JS
@@ -731,7 +810,14 @@ sub LoaderCreateCustomerJSCalls {
         MODULE:
         for my $Module ( sort keys %{$Setting} ) {
             next MODULE if ref $Setting->{$Module}->{JavaScript} ne 'ARRAY';
-            @FileList = ( @FileList, @{ $Setting->{$Module}->{JavaScript} || [] } );
+
+            FILE:
+            for my $File ( @{ $Setting->{$Module}->{JavaScript} || [] } ) {
+                next FILE if $ViewFileList{$File};
+
+                push @FileList, $File;
+                $ViewFileList{$File} = 1;
+            }
         }
 
         $Self->_HandleJSList(
@@ -740,11 +826,10 @@ sub LoaderCreateCustomerJSCalls {
             BlockName => 'ModuleJS',
             JSHome    => $JSHome,
         );
-
     }
 
     #print STDERR "Time: " . Time::HiRes::tv_interval([$t0]);
-    return;
+    return 1;
 }
 
 sub _HandleCSSList {

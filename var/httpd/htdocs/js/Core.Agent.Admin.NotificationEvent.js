@@ -217,7 +217,19 @@ Core.Agent.Admin.NotificationEvent = (function (TargetNS) {
      *      This function removes a notification event language.
      */
     TargetNS.RemoveLanguage = function (Object) {
-        Object.closest('.NotificationLanguage').remove();
+        var $NotificationLanguage = Object.closest('.NotificationLanguage');
+
+        if (
+            Core.UI
+            && Core.UI.RichTextEditor
+            && typeof Core.UI.RichTextEditor.DestroyInstance === 'function'
+        ) {
+            $NotificationLanguage.find('textarea.RichText').each(function () {
+                Core.UI.RichTextEditor.DestroyInstance($(this));
+            });
+        }
+
+        $NotificationLanguage.remove();
         TargetNS.LanguageSelectionRebuild();
     };
 

@@ -129,7 +129,7 @@ Core.Form.Validate = (function (TargetNS) {
 
         if (InputErrorMessageHTML && InputErrorMessageHTML.length) {
             // If error field is a RTE, it is a little bit more difficult.
-            if ($('#cke_' + Core.App.EscapeSelector(Element.id)).length) {
+            if (Core.UI.RichTextEditor.IsEnabled($Element)) {
                 Core.Form.ErrorTooltips.InitRTETooltip($Element, InputErrorMessageHTML);
             }
             // If server error field is RTE, action must be subscribed and loaded when event is finished because RTE is not loaded yet.
@@ -195,7 +195,7 @@ Core.Form.Validate = (function (TargetNS) {
             $Element.attr('aria-invalid', false);
 
             // if error field is a RTE, it is a little bit more difficult
-            if ($('#cke_' + Core.App.EscapeSelector(Element.id)).length) {
+            if (Core.UI.RichTextEditor.IsEnabled($Element)) {
                 Core.Form.ErrorTooltips.RemoveRTETooltip($Element);
             } else {
                 Core.Form.ErrorTooltips.RemoveTooltip($Element);
@@ -266,10 +266,10 @@ Core.Form.Validate = (function (TargetNS) {
 
         // for richtextareas, get editor code and remove all tags and whitespace
         // keep tags if images are embedded because of inline-images
-        // keep tags if codemirror plugin is used (for XSLT editor)
         if (Core.UI.RichTextEditor.IsEnabled($Element)) {
-            Value = CKEDITOR.instances[Element.id].getData();
-            if (typeof CKEDITOR.instances[Element.id].config.codemirror === 'undefined' && !Value.match(/<img/)) {
+            Value = Core.UI.RichTextEditor.GetData(Element.id);
+
+            if (!Value.match(/<img/i)) {
                 Value = Value.replace(/\s+|&nbsp;|<\/?\w+[^>]*\/?>/g, '');
             }
         }

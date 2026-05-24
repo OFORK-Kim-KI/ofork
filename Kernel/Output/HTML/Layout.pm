@@ -1541,7 +1541,7 @@ sub Footer {
 
     # get datepicker data, if needed in module
     if ($HasDatepicker) {
-        my $VacationDays = $Self->DatepickerGetVacationDays();
+        my $VacationDays  = $Self->DatepickerGetVacationDays();
         my $TextDirection = $Self->{LanguageObject}->{TextDirection} || '';
 
         # send data to JS
@@ -1603,6 +1603,17 @@ sub Footer {
         Result    => 'ID',
     );
 
+    my $UserLanguage = lc( $Self->{UserLanguage} || 'en' );
+    $UserLanguage =~ s/_/-/g;
+
+    my ($CKEditor5Language) = split /-/, $UserLanguage;
+
+    my %CKEditor5SupportedLanguages = map { $_ => 1 } qw(en de fr it);
+
+    if ( !$CKEditor5SupportedLanguages{$CKEditor5Language} ) {
+        $CKEditor5Language = 'en';
+    }
+
     # add JS data
     my %JSConfig = (
         Baselink                       => $Self->{Baselink},
@@ -1617,8 +1628,10 @@ sub Footer {
         ChallengeToken                 => $Self->{UserChallengeToken},
         CustomerPanelSessionName       => $ConfigObject->Get('CustomerPanelSessionName'),
         UserLanguage                   => $Self->{UserLanguage},
+        CKEditor5Language              => $CKEditor5Language,
         WebMaxFileUpload               => $ConfigObject->Get('WebMaxFileUpload'),
         RichTextSet                    => $ConfigObject->Get('Frontend::RichText'),
+        RichTextPath                   => $ConfigObject->Get('Frontend::RichTextPath'),
         CheckEmailAddresses            => $ConfigObject->Get('CheckEmailAddresses'),
         MenuDragDropEnabled            => $ConfigObject->Get('Frontend::MenuDragDropEnabled'),
         OpenMainMenuOnHover            => $ConfigObject->Get('OpenMainMenuOnHover'),
@@ -4157,7 +4170,7 @@ sub CustomerFooter {
 
     # get datepicker data, if needed in module
     if ($HasDatepicker) {
-        my $VacationDays = $Self->DatepickerGetVacationDays();
+        my $VacationDays  = $Self->DatepickerGetVacationDays();
         my $TextDirection = $Self->{LanguageObject}->{TextDirection} || '';
 
         # send data to JS
@@ -4196,13 +4209,23 @@ sub CustomerFooter {
         }
     }
 
-
     # AutoComplete-Config
     my $AutocompleteConfig = $ConfigObject->Get('AutoComplete::Customer');
 
     for my $ConfigElement ( sort keys %{$AutocompleteConfig} ) {
         $AutocompleteConfig->{$ConfigElement}->{ButtonText}
             = $Self->{LanguageObject}->Translate( $AutocompleteConfig->{$ConfigElement}{ButtonText} );
+    }
+
+    my $UserLanguage = lc( $Self->{UserLanguage} || 'en' );
+    $UserLanguage =~ s/_/-/g;
+
+    my ($CKEditor5Language) = split /-/, $UserLanguage;
+
+    my %CKEditor5SupportedLanguages = map { $_ => 1 } qw(en de fr it);
+
+    if ( !$CKEditor5SupportedLanguages{$CKEditor5Language} ) {
+        $CKEditor5Language = 'en';
     }
 
     # add JS data
@@ -4219,6 +4242,9 @@ sub CustomerFooter {
         ChallengeToken           => $Self->{UserChallengeToken},
         CustomerPanelSessionName => $ConfigObject->Get('CustomerPanelSessionName'),
         UserLanguage             => $Self->{UserLanguage},
+        CKEditor5Language        => $CKEditor5Language,
+        RichTextSet              => $ConfigObject->Get('Frontend::RichText'),
+        RichTextPath             => $ConfigObject->Get('Frontend::RichTextPath'),
         CheckEmailAddresses      => $ConfigObject->Get('CheckEmailAddresses'),
         InputFieldsActivated     => $ConfigObject->Get('ModernizeCustomerFormFields'),
         Autocomplete             => $AutocompleteConfig,

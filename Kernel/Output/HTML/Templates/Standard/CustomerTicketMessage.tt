@@ -92,16 +92,22 @@
                     <div id="SubjectServerError" class="TooltipErrorMessage NoJavaScriptMessage[% Data.SubjectInvalid | html %]" ><p>[% Translate("This field is required.") | html %]</p></div>
                     <div class="Clear"></div>
                 </div>
+
                 <div class="RichTextHolder">
                     <label for="RichText" class="Mandatory">
                         <span class="Marker">*</span>
                         [% Translate("Text") | html %]:
                     </label>
-                    <textarea id="RichText" class="RichText Validate_Required [% Data.BodyInvalid | html %]" name="Body" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") %]">[% Data.Body | html %]</textarea>
-                    <div id="RichTextError" class="TooltipErrorMessage" ><p>[% Translate("This field is required.") | html %]</p></div>
-                    <div id="RichTextServerError" class="TooltipErrorMessage NoJavaScriptMessage[% Data.BodyInvalid | html %]" ><p>[% Translate("This field is required.") | html %]</p></div>
+
+                    <div id="RichTextField" class="RichTextField">
+                        <textarea id="RichText" class="RichText Validate_Required [% Data.BodyInvalid | html %]" name="Body" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") %]">[% Data.Body | html %]</textarea>
+                        <div id="RichTextError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
+                        <div id="RichTextServerError" class="TooltipErrorMessage NoJavaScriptMessage[% Data.BodyInvalid | html %]"><p>[% Translate("This field is required.") | html %]</p></div>
+                    </div>
+
                     <div class="Clear"></div>
                 </div>
+
                 <div>
                 <label>[% Translate("Attachments") | html %]:</label>
                     <div class="Field">

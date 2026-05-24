@@ -1,3 +1,6 @@
+#12.0.3 2026-05-24
+ - Security update
+
 #12.0.1 2025-08-30
  - Neu Kim Ki
  - KPI

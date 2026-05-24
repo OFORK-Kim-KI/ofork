@@ -12,18 +12,4 @@
 # did not receive this file, see http://www.gnu.org/licenses/agpl.txt.
 # --
 
-<script type="text/javascript">
-(function(){var d=document.domain;while (true){try{var A=window.parent.document.domain;break;}catch(e) {};d=d.replace(/.*?(?:\.|\$)/,'');if (d.length==0) break;try{document.domain=d;}catch (e){break;}}})();
-[% RenderBlockStart("ErrorNoFormID") %]
-window.parent.CKEDITOR.tools.callFunction([% Data.CKEditorFuncNum | html %], '', [% Translate("Need FormID!") | JSON %]);
-[% RenderBlockEnd("ErrorNoFormID") %]
-[% RenderBlockStart("ErrorNoFileFound") %]
-window.parent.CKEDITOR.tools.callFunction([% Data.CKEditorFuncNum | html %], '', [% Translate("No file found!") | JSON %]);
-[% RenderBlockEnd("ErrorNoFileFound") %]
-[% RenderBlockStart("ErrorNoImageFile") %]
-window.parent.CKEDITOR.tools.callFunction([% Data.CKEditorFuncNum | html %], '', [% Translate("The file is not an image that can be shown inline!") | JSON %]);
-[% RenderBlockEnd("ErrorNoImageFile") %]
-[% RenderBlockStart("Success") %]
-window.parent.CKEDITOR.tools.callFunction([% Data.CKEditorFuncNum | html %], "[% Data.URL | html %]");
-[% RenderBlockEnd("Success") %]
-</script>
+

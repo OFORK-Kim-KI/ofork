@@ -50,13 +50,15 @@ Core.Customer.TicketProcess = (function (TargetNS) {
                 });
             }
 
-            // remove/destroy CKEditor instances
+            // remove/destroy rich text editor instances
             // This is needed to initialize other instances (in other activity dialogs)
-            // without a page reload
-            if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances) {
-                $.each(CKEDITOR.instances, function (Key) {
-                    CKEDITOR.instances[Key].destroy();
-                });
+            // without a page reload.
+            if (
+                Core.UI
+                && Core.UI.RichTextEditor
+                && typeof Core.UI.RichTextEditor.DestroyAllEditors === 'function'
+            ) {
+                Core.UI.RichTextEditor.DestroyAllEditors();
             }
 
             if ($('#ProcessEntityID').val()) {

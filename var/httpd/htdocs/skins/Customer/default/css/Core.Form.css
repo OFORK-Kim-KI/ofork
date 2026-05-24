@@ -129,7 +129,6 @@ textarea,
 select[multiple=multiple] {
     border: 1px solid #C9C9C9;
     border-top-color: #C0C0C0;
-    /* Opera 10.5 has per default a grey background */
     background-color: #FFF;
     -webkit-box-shadow: 0 1px 2px #E8E8E8 inset, 0 1px 0 #FFF;
     box-shadow: 0 1px 2px #E8E8E8 inset, 0 1px 0 #FFF;
@@ -365,17 +364,10 @@ fieldset div.Field {
     margin: 4px 131px 0 0;
 }
 
-/**
- * @subsection  Textarea
- * @note        Fixed font needed in textareas because otherwise the line wrapping is incorrect.
- */
 textarea {
     font-family: monospace,fixed;
 }
 
-/**
- * @subsection  Input Readonly
- */
 input[type=text][readonly],
 input[type=password][readonly],
 input[type=email][readonly],
@@ -383,9 +375,6 @@ textarea[readonly] {
     background-color: #DDD;
 }
 
-/**
-* @note         Validation
-*/
 form label.Mandatory {
     color: black !important;
 }
@@ -402,18 +391,10 @@ form label.LabelError {
     color: #ff505e !important;
 }
 
-/*
- * @note    This will be displayed by Core.UI.Tooltips
- */
 div.TooltipErrorMessage {
     display: none;
 }
 
-/*
- * @note    Special case: do display
- *          ServerError message divs when JavaScript is not active,
- *          otherwise the user will not see these messages
- */
 .NoJavaScript .NoJavaScriptMessageServerError {
     display: block;
     padding: 2px 5px;
@@ -423,10 +404,6 @@ div.TooltipErrorMessage {
 .NoJavaScript .NoJavaScriptMessageServerError * {
     color: #ff505e;
 }
-
-/**
- * @subsection AJAX Loader
- */
 
 .AJAXLoader {
     display: inline-block;
@@ -451,10 +428,6 @@ div.TooltipErrorMessage {
     font-size: 14px;
     color: #777;
 }
-
-/**
- * @subsection    Tree selection icon and overlay for select boxes
- */
 
 .ShowTreeSelection {
     width: 16px;
@@ -570,10 +543,6 @@ fieldset .ShowTreeSelection {
     margin: -10px -15px;
 }
 
-/**
- * @subsection Chat
- */
-
 .ArticleChat {
     padding: 2px 5px;
     font-size: 11px;
@@ -588,10 +557,6 @@ fieldset .ShowTreeSelection {
     font-size: 12px;
     padding: 10px;
 }
-
-/**
- * @subsection  Drag & drop upload
- */
 
 div.DnDUploadBox {
     overflow-y: hidden;
@@ -728,4 +693,245 @@ table.AttachmentList.DataTable thead th {
 .OFORKButton {
     margin-left: 0px;
     margin-top: 4px;
+}
+
+/* CKEditor 5 customer rich text field */
+.RichTextHolder .RichTextField {
+    margin-left: 135px;
+}
+
+.RichTextHolder .RichTextField .ck.ck-editor {
+    width: 620px;
+    max-width: 620px;
+    box-sizing: border-box;
+}
+
+.RichTextHolder .RichTextField .ck.ck-editor div {
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.RichTextHolder .RichTextField .ck.ck-editor__top,
+.RichTextHolder .RichTextField .ck.ck-sticky-panel,
+.RichTextHolder .RichTextField .ck.ck-sticky-panel__content {
+    width: 620px;
+    max-width: 620px;
+    background: transparent;
+    overflow: visible;
+}
+
+.RichTextHolder .RichTextField .ck.ck-toolbar {
+    width: 620px !important;
+    max-width: 620px;
+    background: #f3f3f3;
+    border: 1px solid #c9c9c9;
+    border-bottom: none;
+    overflow: visible;
+}
+
+.RichTextHolder .RichTextField .ck.ck-toolbar__items {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    max-width: 100%;
+    gap: 0 !important;
+    background: transparent;
+    overflow: visible;
+}
+
+.RichTextHolder .RichTextField .ck.ck-toolbar__separator {
+    margin-left: 2px !important;
+    margin-right: 2px !important;
+}
+
+.RichTextHolder .RichTextField .ck.ck-toolbar > .ck-toolbar__items > * {
+    margin: 1px !important;
+}
+
+.RichTextHolder .RichTextField .ck.ck-editor button,
+.RichTextHolder .RichTextField .ck.ck-editor .ck.ck-button,
+.RichTextHolder .RichTextField .ck.ck-editor .ck.ck-dropdown__button {
+    margin: 0 !important;
+    padding: 2px 4px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
+    height: 24px !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.RichTextHolder .RichTextField .ck.ck-button .ck.ck-icon,
+.RichTextHolder .RichTextField .ck.ck-dropdown__button .ck.ck-icon {
+    width: 14px !important;
+    height: 14px !important;
+}
+
+.RichTextHolder .RichTextField .ck.ck-button__label {
+    line-height: 1 !important;
+}
+
+.RichTextHolder .RichTextField .ck.ck-dropdown {
+    margin: 0 !important;
+}
+
+.RichTextHolder .RichTextField .ck.ck-dropdown__panel {
+    margin: 0 !important;
+    z-index: 10000;
+}
+
+.RichTextHolder .RichTextField .ck.ck-editor__editable,
+.RichTextHolder .RichTextField .ck.ck-editor__editable_inline,
+.RichTextHolder .RichTextField .ck.ck-editor__editable.ck-focused {
+    width: 620px !important;
+    max-width: 620px !important;
+    height: 320px;
+    min-height: 320px !important;
+    max-height: none;
+    resize: vertical !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+    color: #333;
+    padding: 10px 14px;
+}
+
+.RichTextHolder .RichTextField .ck.ck-content {
+    color: #333;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.RichTextHolder .RichTextField .ck.ck-content p,
+.RichTextHolder .RichTextField .ck.ck-content div,
+.RichTextHolder .RichTextField .ck.ck-content li {
+    color: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.RichTextHolder .RichTextField .ck.ck-content span {
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.RichTextHolder .RichTextField .ck.ck-content p {
+    margin: 0 0 1em 0;
+    padding: 0;
+}
+
+.RichTextHolder .RichTextField .ck.ck-content div {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.RichTextHolder .RichTextField .ck.ck-content ul,
+.RichTextHolder .RichTextField .ck.ck-content ol {
+    margin: 0 0 1em 0;
+    padding-left: 28px;
+}
+
+.RichTextHolder .RichTextField .ck.ck-content li {
+    margin-left: 0;
+    padding-left: 4px;
+}
+
+.RichTextHolder .RichTextField .ck.ck-powered-by {
+    right: auto !important;
+    left: 4px !important;
+    bottom: 0 !important;
+    pointer-events: none !important;
+}
+
+/* CKEditor 5 customer balloon panels, e.g. link dialog */
+.ck.ck-balloon-panel {
+    z-index: 10000;
+}
+
+.ck.ck-balloon-panel label,
+.ck.ck-balloon-panel .ck.ck-label {
+    float: none !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin: 0 0 3px 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    text-align: left !important;
+    color: #333 !important;
+    font-size: 12px !important;
+    line-height: 14px !important;
+    position: static !important;
+    transform: none !important;
+    display: block !important;
+}
+
+.ck.ck-balloon-panel .ck-labeled-field-view {
+    display: block !important;
+    margin: 0 0 8px 0 !important;
+    padding: 0 !important;
+}
+
+.ck.ck-balloon-panel .ck-labeled-field-view__input-wrapper {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.ck.ck-balloon-panel input,
+.ck.ck-balloon-panel .ck.ck-input {
+    display: block !important;
+    width: 100% !important;
+    min-width: 260px !important;
+    margin: 0 !important;
+    padding: 5px 7px !important;
+    color: #333 !important;
+    font-size: 12px !important;
+    line-height: 16px !important;
+    background: #fff !important;
+    box-sizing: border-box !important;
+}
+
+.ck.ck-balloon-panel button,
+.ck.ck-balloon-panel .ck.ck-button {
+    margin: 0 !important;
+    padding: 4px 9px !important;
+    min-width: auto !important;
+    min-height: auto !important;
+    height: auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.ck.ck-balloon-panel .ck-link-form {
+    display: block !important;
+    min-width: 330px !important;
+    padding: 10px !important;
+}
+
+.ck.ck-balloon-panel .ck-link-form__actions,
+.ck.ck-balloon-panel .ck-form__actions {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+    margin-top: 8px !important;
+    padding: 0 !important;
+}
+
+.RichTextHolder .RichTextField .ck.ck-content a {
+    color: #0066cc;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.RichTextHolder .RichTextField .ck.ck-content a:hover,
+.RichTextHolder .RichTextField .ck.ck-content a:focus {
+    color: #004c99;
+    text-decoration: underline;
+}
+
+.RichTextHolder .RichTextField .ck.ck-content a:visited {
+    color: #551a8b;
 }
