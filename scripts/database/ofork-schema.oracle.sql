@@ -8501,3 +8501,58 @@ END;
 /
 --
 ;
+-- ----------------------------------------------------------
+--  create table selfservice
+-- ----------------------------------------------------------
+CREATE TABLE selfservice (
+    id NUMBER (12, 0) NOT NULL,
+    selfservice_categories_id NUMBER (12, 0) NOT NULL,
+    categories VARCHAR2 (250) NOT NULL,
+    headline VARCHAR2 (250) NOT NULL,
+    schlagwoerter VARCHAR2 (1500) NULL,
+    service_text CLOB NULL,
+    color VARCHAR2 (250) NULL,
+    valid_id NUMBER (5, 0) NOT NULL,
+    create_time DATE NOT NULL,
+    create_by NUMBER (12, 0) NOT NULL,
+    change_time DATE NOT NULL,
+    change_by NUMBER (12, 0) NOT NULL
+);
+ALTER TABLE selfservice ADD CONSTRAINT PK_selfservice PRIMARY KEY (id);
+BEGIN
+    EXECUTE IMMEDIATE 'DROP SEQUENCE SE_selfservice';
+EXCEPTION
+    WHEN OTHERS THEN NULL;
+END;
+/
+--
+;
+CREATE SEQUENCE SE_selfservice
+INCREMENT BY 1
+START WITH 1
+NOMAXVALUE
+NOCYCLE
+CACHE 20
+ORDER
+;
+BEGIN
+    EXECUTE IMMEDIATE 'DROP TRIGGER SE_selfservice_t';
+EXCEPTION
+    WHEN OTHERS THEN NULL;
+END;
+/
+--
+;
+CREATE OR REPLACE TRIGGER SE_selfservice_t
+BEFORE INSERT ON selfservice
+FOR EACH ROW
+BEGIN
+    IF :new.id IS NULL THEN
+        SELECT SE_selfservice.nextval
+        INTO :new.id
+        FROM DUAL;
+    END IF;
+END;
+/
+--
+;

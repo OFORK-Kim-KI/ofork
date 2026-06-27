@@ -3509,4 +3509,19 @@
     <Column Name="change_by" Required="true" Type="INTEGER" />
 </Table>
 
+<Table Name="selfservice">
+    <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="INTEGER" />
+    <Column Name="selfservice_categories_id" Required="true" Type="INTEGER" />
+    <Column Name="categories" Required="true" Size="250" Type="VARCHAR" />
+    <Column Name="headline" Required="true" Size="250" Type="VARCHAR" />
+    <Column Name="schlagwoerter" Required="false" Size="1500" Type="VARCHAR" />
+    <Column Name="service_text" Required="false" Size="100000" Type="VARCHAR"/>
+    <Column Name="color" Required="false" Size="250" Type="VARCHAR" />
+    <Column Name="valid_id" Required="true" Type="SMALLINT" />
+    <Column Name="create_time" Required="true" Type="DATE" />
+    <Column Name="create_by" Required="true" Type="INTEGER" />
+    <Column Name="change_time" Required="true" Type="DATE" />
+    <Column Name="change_by" Required="true" Type="INTEGER" />
+</Table>
+
 </database>

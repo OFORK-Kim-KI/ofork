@@ -122,6 +122,92 @@ Core.UI.RichTextEditor = (function (TargetNS) {
         return Data;
     }
 
+    function NormalizeDataForTextarea(Data) {
+        var Container,
+            Child,
+            NextChild,
+            Fragment,
+            BR,
+            IsEmptyParagraph;
+
+        if (!Data) {
+            return '';
+        }
+
+        Container = document.createElement('div');
+        Container.innerHTML = Data;
+
+        Child = Container.firstChild;
+
+        while (Child) {
+            NextChild = Child.nextSibling;
+
+            if (
+                Child.nodeType === 1
+                && Child.nodeName
+                && Child.nodeName.toLowerCase() === 'p'
+            ) {
+                IsEmptyParagraph = Child.innerHTML
+                    .replace(/&nbsp;/gi, '')
+                    .replace(/\s+/g, '')
+                    .replace(/<br\s*\/?>/gi, '') === '';
+
+                BR = document.createElement('br');
+
+                if (IsEmptyParagraph) {
+                    Container.insertBefore(BR, Child);
+                    Container.removeChild(Child);
+                }
+                else {
+                    Fragment = document.createDocumentFragment();
+
+                    while (Child.firstChild) {
+                        Fragment.appendChild(Child.firstChild);
+                    }
+
+                    Container.insertBefore(Fragment, Child);
+                    Container.insertBefore(BR, Child);
+                    Container.removeChild(Child);
+                }
+            }
+
+            Child = NextChild;
+        }
+
+        Data = Container.innerHTML;
+        Data = Data.replace(/<br>/gi, '<br />');
+
+        return Data;
+    }
+
+    function PatchUpdateSourceElement(Editor, $EditorArea) {
+        var OriginalUpdateSourceElement;
+
+        if (
+            !Editor
+            || typeof Editor.updateSourceElement !== 'function'
+            || Editor.OForkNormalizedUpdateSourceElement
+        ) {
+            return;
+        }
+
+        OriginalUpdateSourceElement = Editor.updateSourceElement;
+
+        Editor.updateSourceElement = function () {
+            var Result,
+                Data;
+
+            Result = OriginalUpdateSourceElement.apply(Editor, arguments);
+            Data = Editor.getData ? Editor.getData() : $EditorArea.val();
+
+            $EditorArea.val(SanitizeDataForTextarea(NormalizeDataForTextarea(Data)));
+
+            return Result;
+        };
+
+        Editor.OForkNormalizedUpdateSourceElement = true;
+    }
+
     function GetFontSizeOptions() {
         var FontSizes = Core.Config.Get(
             'RichText.FontSizes',
@@ -881,6 +967,7 @@ Core.UI.RichTextEditor = (function (TargetNS) {
                     UploadURL: UploadURL
                 };
 
+                PatchUpdateSourceElement(Editor, $EditorArea);
                 SetEditorDimensions(Editor, $EditorArea);
                 BindEditorEvents(EditorID);
 
@@ -954,6 +1041,7 @@ Core.UI.RichTextEditor = (function (TargetNS) {
         }
 
         Data = Instance.Editor.getData();
+        Data = NormalizeDataForTextarea(Data);
 
         $EditorArea.val(SanitizeDataForTextarea(Data));
     };

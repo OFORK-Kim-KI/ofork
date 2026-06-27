@@ -177,7 +177,7 @@
     background: #fff !important;
     color: #333;
     font-size: 12px;
-    line-height: 1.4;
+    line-height: 1.25 !important;
     box-sizing: border-box !important;
     resize: vertical !important;
     overflow-y: auto !important;
@@ -187,7 +187,7 @@
 .RichTextField .ck.ck-content {
     color: #333;
     font-size: 12px;
-    line-height: 1.4;
+    line-height: 1.25 !important;
 }
 
 .RichTextField .ck.ck-content p,
@@ -204,19 +204,26 @@
 }
 
 .RichTextField .ck.ck-content p {
-    margin: 0 0 1em 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.25 !important;
+}
+
+.RichTextField .ck.ck-content p + p {
+    margin-top: 0 !important;
 }
 
 .RichTextField .ck.ck-content ul,
 .RichTextField .ck.ck-content ol {
-    margin: 0 0 1em 0;
-    padding-left: 28px;
+    margin: 0 !important;
+    padding-left: 28px !important;
 }
 
 .RichTextField .ck.ck-content li {
     margin-left: 0;
     padding-left: 4px;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
 }
 
 .RichTextField .ck.ck-content a {

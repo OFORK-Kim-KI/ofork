@@ -289,7 +289,7 @@ function scrollTo(){
 		                    <label for="RichText">
 		                        [% Translate("Remarks") | html %]:
 		                    </label>
-		                    <textarea id="RichText" class="RichText" name="Body" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") %]">[% Data.Body | html %]</textarea>
+		                    <textarea id="RichText" class="RichTextField" name="Body" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") %]">[% Data.Body | html %]</textarea>
 		                    <div class="Clear"></div>
 		                </div>
 

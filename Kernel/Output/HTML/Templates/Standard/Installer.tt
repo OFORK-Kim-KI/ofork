@@ -75,11 +75,12 @@
             </div>
             <div class="LayoutGrid Content">
                 <div class="Size1of2">
-                    <h4>Germany</h4>
-                    <p>OFORK</p>
-                    <p>Meeräckerstraße 30</p>
-                    <p>68163 Mannheim</p>
-                    <p>[% Translate("Phone") | html %]: <a href="tel:+4915124119789">+49 (0) 151 24119789</a></p>
+                    <h4>France</h4>
+                    <p>Franziska - Steps</p>
+                    <p>OFORK - Kim-Ki</p>
+                    <p>82 Chemin des Launes</p>
+                    <p>06510 Carros</p>
+                    <p>[% Translate("Phone") | html %]: <a href="tel:+33698212538">+33 (0) 6 98 21 25 38</a></p>
                 </div>
             </div>
             <div class="Clear"></div>

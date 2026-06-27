@@ -2866,6 +2866,7 @@ sub Data {
         'CheckMXRecord' => 'MX-Records prüfen',
         'Email addresses that are manually entered are checked against the MX records found in DNS. Don\'t use this option if your DNS is slow or does not resolve public addresses.' =>
             'E-Mail-Adressen, die vom Benutzer angegeben werden, werden gegen die MX-Einträge im DNS geprüft. Verwenden Sie diese Option nicht, wenn Ihr DNS langsam ist oder öffentliche Adressen nicht auflösen kann.',
+        'For production purposes always use https.' => 'Verwenden Sie für Produktionszwecke immer HTTPS.',
 
         # Template: LinkObject
         'Delete link' => 'Verknüpfung löschen',

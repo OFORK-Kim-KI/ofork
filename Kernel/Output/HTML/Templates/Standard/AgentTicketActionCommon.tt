@@ -391,7 +391,7 @@
                             <label class="Mandatory" for="RichText"><span class="Marker">*</span>[% Translate("Text") | html %]:</label>
 [% RenderBlockEnd("RichTextLabelMandatory") %]
 
-                            <div id="RichTextField" class="AgentTicketNote">
+                            <div class="RichTextField AgentTicketNote">
                                 <textarea id="RichText" class="RichText Validate [% Data.BodyInvalid %] [% Data.BodyRequired %]" name="Body" rows="15" cols="[% Config("Ticket::Frontend::TextAreaNote") %]">[% Data.Body | html %]</textarea>
                                 <div id="RichTextError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>
                                 <div id="RichTextServerError" class="TooltipErrorMessage"><p>[% Translate("This field is required.") | html %]</p></div>

@@ -2791,3 +2791,21 @@ CREATE TABLE selfservicecat_selfservice (
     change_by INTEGER NOT NULL,
     PRIMARY KEY(id)
 );
+# ----------------------------------------------------------
+#  create table selfservice
+# ----------------------------------------------------------
+CREATE TABLE selfservice (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    selfservice_categories_id INTEGER NOT NULL,
+    categories VARCHAR (250) NOT NULL,
+    headline VARCHAR (250) NOT NULL,
+    schlagwoerter VARCHAR (1500) NULL,
+    service_text VARCHAR (100000) NULL,
+    color VARCHAR (250) NULL,
+    valid_id SMALLINT NOT NULL,
+    create_time DATETIME NOT NULL,
+    create_by INTEGER NOT NULL,
+    change_time DATETIME NOT NULL,
+    change_by INTEGER NOT NULL,
+    PRIMARY KEY(id)
+);

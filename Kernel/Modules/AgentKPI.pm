@@ -42,17 +42,17 @@ sub Run {
     my ( $Self, %Param ) = @_;
 
     # get needed objects
-    my $ConfigObject = $Kernel::OM->Get('Kernel::Config');
-    my $LayoutObject = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
-    my $ParamObject = $Kernel::OM->Get('Kernel::System::Web::Request');
+    my $ConfigObject    = $Kernel::OM->Get('Kernel::Config');
+    my $LayoutObject    = $Kernel::OM->Get('Kernel::Output::HTML::Layout');
+    my $ParamObject     = $Kernel::OM->Get('Kernel::System::Web::Request');
     my $DynamicFieldObject = $Kernel::OM->Get('Kernel::System::DynamicField');
-    my $UserObject         = $Kernel::OM->Get('Kernel::System::User');
-    my $GroupObject        = $Kernel::OM->Get('Kernel::System::Group');
-    my $TicketObject       = $Kernel::OM->Get('Kernel::System::Ticket');
-    my $StateObject        = $Kernel::OM->Get('Kernel::System::State');
-    my $QueueObject        = $Kernel::OM->Get('Kernel::System::Queue');
-    my $TimeObject         = $Kernel::OM->Get('Kernel::System::Time');
-    my $DateTimeObject = $Kernel::OM->Create(
+    my $UserObject      = $Kernel::OM->Get('Kernel::System::User');
+    my $GroupObject     = $Kernel::OM->Get('Kernel::System::Group');
+    my $KpiSucheObject  = $Kernel::OM->Get('Kernel::System::KpiSuche');
+    my $StateObject     = $Kernel::OM->Get('Kernel::System::State');
+    my $QueueObject     = $Kernel::OM->Get('Kernel::System::Queue');
+    my $TimeObject      = $Kernel::OM->Get('Kernel::System::Time');
+    my $DateTimeObject  = $Kernel::OM->Create(
         'Kernel::System::DateTime'
     );
 
@@ -67,12 +67,12 @@ sub Run {
     }
 
     if ( $GetParam{OhneDatum} ) {
-    	$GetParam{FromDateDay} = '';
-    	$GetParam{FromDateMonth} = '';
-    	$GetParam{FromDateYear} = '';
-    	$GetParam{ToDateDay} = '';
-    	$GetParam{ToDateMonth} = '';
-    	$GetParam{ToDateYear} = '';
+        $GetParam{FromDateDay} = '';
+        $GetParam{FromDateMonth} = '';
+        $GetParam{FromDateYear} = '';
+        $GetParam{ToDateDay} = '';
+        $GetParam{ToDateMonth} = '';
+        $GetParam{ToDateYear} = '';
     }
 
     my @StateIDs = $ParamObject->GetArray( Param => 'StateID' );
@@ -130,44 +130,49 @@ sub Run {
         ValidateDateInFuture => 0,
     );
 
+    my $FilterStart = '';
+    my $FilterEnd   = '';
+
+    if ( $GetParam{FromDateYear} ) {
+        $FilterStart = "$GetParam{FromDateYear}-$GetParam{FromDateMonth}-$GetParam{FromDateDay} 00:00:00";
+        $FilterEnd   = "$GetParam{ToDateYear}-$GetParam{ToDateMonth}-$GetParam{ToDateDay} 00:00:00";
+    }
+
     my $openTickets  = '';
     my $closeTickets = '';
 
-    if ( $GetParam{FromDateYear} ) {
-        $openTickets = $TicketObject->TicketSearch(
-            Result    => 'COUNT',
-            TicketCreateTimeNewerDate => "$GetParam{FromDateYear}-$GetParam{FromDateMonth}-$GetParam{FromDateDay} 00:00:00",
-            TicketCreateTimeOlderDate => "$GetParam{ToDateYear}-$GetParam{ToDateMonth}-$GetParam{ToDateDay} 00:00:00",
-            StateType => ['open','new'],
-            UserID    => 1,
+    if ($FilterStart) {
+        $openTickets = $KpiSucheObject->TicketCountByStateType(
+            StateTypes => ['open','new'],
+            Start      => $FilterStart,
+            End        => $FilterEnd,
+            UserID     => 1,
         );
-    }else{
-        $openTickets = $TicketObject->TicketSearch(
-            Result    => 'COUNT',
-            StateType => ['open','new'],
-            UserID    => 1,
+    }
+    else {
+        $openTickets = $KpiSucheObject->TicketCountByStateType(
+            StateTypes => ['open','new'],
+            UserID     => 1,
         );
     }
 
-    if ( $GetParam{FromDateYear} ) {
-
-        $closeTickets = $TicketObject->TicketSearch(
-            Result    => 'COUNT',
-            TicketCreateTimeNewerDate => "$GetParam{FromDateYear}-$GetParam{FromDateMonth}-$GetParam{FromDateDay} 00:00:00",
-            TicketCreateTimeOlderDate => "$GetParam{ToDateYear}-$GetParam{ToDateMonth}-$GetParam{ToDateDay} 00:00:00",
-            StateType => ['closed'],
-            UserID    => 1,
+    if ($FilterStart) {
+        $closeTickets = $KpiSucheObject->TicketCountByStateType(
+            StateTypes => ['closed'],
+            Start      => $FilterStart,
+            End        => $FilterEnd,
+            UserID     => 1,
         );
-    }else{
-        $closeTickets = $TicketObject->TicketSearch(
-            Result    => 'COUNT',
-            StateType => ['closed'],
-            UserID    => 1,
+    }
+    else {
+        $closeTickets = $KpiSucheObject->TicketCountByStateType(
+            StateTypes => ['closed'],
+            UserID     => 1,
         );
     }
 
-    $Param{'openTickets'} = $openTickets;
-    $Param{'closeTickets'} = $closeTickets;
+    $Param{'openTickets'}  = $openTickets  || 0;
+    $Param{'closeTickets'} = $closeTickets || 0;
 
     my %StateList = $StateObject->StateList(
         UserID => 1,
@@ -186,16 +191,25 @@ sub Run {
         Class        => "Modernize",
     );
 
+    my %StateCountData;
+    if (@StateIDs) {
+        %StateCountData = $KpiSucheObject->StateCounts(
+            StateIDs => \@StateIDs,
+            UserID   => 1,
+        );
+    }
+    else {
+        %StateCountData = $KpiSucheObject->StateCounts(
+            UserID => 1,
+        );
+    }
+
     my $openTicketState = 0;
     if ( @StateIDs ) {
 
         for my $StateID ( @StateIDs ) {
 
-            $openTicketState = $TicketObject->TicketSearch(
-                Result   => 'COUNT',
-                StateIDs => [$StateID],
-                UserID   => 1,
-            );
+            $openTicketState = $StateCountData{Counts}->{$StateID} || 0;
 
             my $State = $StateObject->StateLookup(
                 StateID => $StateID,
@@ -212,11 +226,7 @@ sub Run {
 
         for my $StateID ( sort keys %StateList ) {
 
-            $openTicketState = $TicketObject->TicketSearch(
-                Result => 'COUNT',
-                States => [$StateList{$StateID}],
-                UserID => 1,
-            );
+            $openTicketState = $StateCountData{Counts}->{$StateID} || 0;
             if ( $openTicketState >= 1 ) {
                 $StateList{$StateID} = $LayoutObject->{LanguageObject}->Translate($StateList{$StateID});
                 $Param{'States'} .= '{y: ' . $openTicketState . ', label: "' . $StateList{$StateID} . '", name: "' . $StateList{$StateID} . '"},';
@@ -239,17 +249,25 @@ sub Run {
         Class        => "Modernize",
     );
 
+    my %QueueCountData;
+    if (@QueueIDs) {
+        %QueueCountData = $KpiSucheObject->QueueOpenCounts(
+            QueueIDs => \@QueueIDs,
+            UserID   => 1,
+        );
+    }
+    else {
+        %QueueCountData = $KpiSucheObject->QueueOpenCounts(
+            UserID => 1,
+        );
+    }
+
     my $openTicketQueue = 0;
     if ( @QueueIDs ) {
- 
+
         for my $QueueID ( @QueueIDs ) {
 
-            $openTicketQueue = $TicketObject->TicketSearch(
-                Result => 'COUNT',
-                QueueIDs => [$QueueID],
-                StateType => ['open','new'],
-                UserID => 1,
-            );
+            $openTicketQueue = $QueueCountData{Counts}->{$QueueID} || 0;
 
             my $Queue = $QueueObject->QueueLookup( QueueID => $QueueID );
 
@@ -261,15 +279,10 @@ sub Run {
         }
     }
     else {
- 
+
         for my $QueueID ( sort keys %Queues ) {
 
-            $openTicketQueue = $TicketObject->TicketSearch(
-                Result => 'COUNT',
-                Queues => [$Queues{$QueueID}],
-                StateType => ['open','new'],
-                UserID => 1,
-            );
+            $openTicketQueue = $QueueCountData{Counts}->{$QueueID} || 0;
 
             if ( $openTicketQueue >= 1 ) {
                 $Queues{$QueueID} = $LayoutObject->{LanguageObject}->Translate($Queues{$QueueID});
@@ -285,73 +298,32 @@ sub Run {
         my ($Sec, $Min, $Hour, $Day, $Month, $Year, $WeekDay) = $TimeObject->SystemTime2Date(
             SystemTime => $TimeObject->SystemTime(),
         );
-    	$StartDate = "$Year-01-01 00:00:00";
-    }else {
-    	$StartDate = "$Param{StartYear}-$Param{StartMonth}-$Param{StartDay} 00:00:00";
+        $StartDate = "$Year-01-01 00:00:00";
+    }
+    else {
+        $StartDate = "$Param{StartYear}-$Param{StartMonth}-$Param{StartDay} 00:00:00";
     }
 
     if ( !$Param{EndMonth} ) {
-    	$EndDate = $TimeObject->CurrentTimestamp();
-    }else {
-    	$EndDate = "$Param{EndYear}-$Param{EndMonth}-$Param{EndDay} 23:59:59";
+        $EndDate = $TimeObject->CurrentTimestamp();
+    }
+    else {
+        $EndDate = "$Param{EndYear}-$Param{EndMonth}-$Param{EndDay} 23:59:59";
     }
 
-    my @closeTickets = $TicketObject->TicketSearch(
-        Result                   => 'ARRAY',
-        StateType                => ['closed'],
-        TicketCloseTimeNewerDate => $StartDate,
-        TicketCloseTimeOlderDate => $EndDate,
-        UserID                   => 1,
+    my %CloseTimeData = $KpiSucheObject->CloseTimeDistribution(
+        Start  => $StartDate,
+        End    => $EndDate,
+        UserID => 1,
     );
 
-    my $CloseTime8H  = 0;
-    my $CloseTime1T  = 0;
-    my $CloseTime3T  = 0;
-    my $CloseTime5T  = 0;
-    my $CloseTime10T = 0;
-    my $CloseTime30T = 0;
-    my $CloseTime88  = 0;
-
-    for my $TicketID ( @closeTickets ) {
-
-        my %Ticket = $TicketObject->TicketGet(
-            TicketID      => $TicketID,
-            DynamicFields => 0,
-            UserID        => 1,
-            Silent        => 0,
-        );
-
-        my $StartTime = $TimeObject->TimeStamp2SystemTime(
-            String => $Ticket{Created},
-        );
-        my $EndTime = $TimeObject->TimeStamp2SystemTime(
-            String => $Ticket{Changed},
-        );
-
-        my $Worktime = $EndTime - $StartTime;
-
-        if ( $Worktime >= 1 && $Worktime <= 28800 ) {
-        	$CloseTime8H ++;
-        }
-        if ( $Worktime >= 28801 && $Worktime <= 86400 ) {
-        	$CloseTime1T ++;
-        }        
-        if ( $Worktime >= 86401 && $Worktime <= 259200 ) {
-        	$CloseTime3T ++;
-        }        
-        if ( $Worktime >= 259201 && $Worktime <= 432000 ) {
-        	$CloseTime5T ++;
-        }
-        if ( $Worktime >= 432001 && $Worktime <= 864000 ) {
-        	$CloseTime10T ++;
-        }
-        if ( $Worktime >= 864001 && $Worktime <= 2592000 ) {
-        	$CloseTime30T ++;
-        }
-        if ( $Worktime >= 2592001 ) {
-        	$CloseTime88 ++;
-        }
-    }
+    my $CloseTime8H  = $CloseTimeData{Buckets}->{CloseTime8H}  || 0;
+    my $CloseTime1T  = $CloseTimeData{Buckets}->{CloseTime1T}  || 0;
+    my $CloseTime3T  = $CloseTimeData{Buckets}->{CloseTime3T}  || 0;
+    my $CloseTime5T  = $CloseTimeData{Buckets}->{CloseTime5T}  || 0;
+    my $CloseTime10T = $CloseTimeData{Buckets}->{CloseTime10T} || 0;
+    my $CloseTime30T = $CloseTimeData{Buckets}->{CloseTime30T} || 0;
+    my $CloseTime88  = $CloseTimeData{Buckets}->{CloseTime88}  || 0;
 
     $Param{'CloseTime'} .= '{y: ' . $CloseTime8H . ', label: "< 8 Stunden"},';
     $Param{'CloseTime'} .= '{y: ' . $CloseTime1T . ', label: "< 24 Stunden"},';
@@ -361,78 +333,18 @@ sub Run {
     $Param{'CloseTime'} .= '{y: ' . $CloseTime30T . ', label: "< 30 Tage"},';
     $Param{'CloseTime'} .= '{y: ' . $CloseTime88 . ', label: "> 30 Tage"},';
 
-
-    my $AnswerTime2H  = 0;
-    my $AnswerTime8H  = 0;
-    my $AnswerTime1T  = 0;
-    my $AnswerTime3T  = 0;
-    my $AnswerTime5T  = 0;
-    my $AnswerTime10T = 0;
-    my $AnswerTime30T = 0;
-    my $AnswerTime88  = 0;
-
-    my @openTickets = $TicketObject->TicketSearch(
-        Result    => 'ARRAY',
-        StateType => ['open','new'],
-        UserID    => 1,
+    my %AnswerTimeData = $KpiSucheObject->AnswerTimeDistribution(
+        UserID => 1,
     );
 
-    for my $TicketID ( @openTickets ) {
-
-        my %Ticket = $TicketObject->TicketGet(
-            TicketID      => $TicketID,
-            DynamicFields => 0,
-            UserID        => 1,
-            Silent        => 0,
-        );
-
-        my @HistoryLines = $TicketObject->HistoryGet(
-            TicketID => $TicketID,
-            UserID   => 1,
-        );
-
-        my $StartTime = $TimeObject->TimeStamp2SystemTime(
-            String => $Ticket{Created},
-        );
-
-        for my $HistoryDataTmp ( @HistoryLines ) {
-
-            my %HistoryData = %{$HistoryDataTmp};
-            if ( $HistoryData{HistoryType} eq "SendAnswer" ) {
-
-                my $EndTime = $TimeObject->TimeStamp2SystemTime(
-                    String => $HistoryData{CreateTime},
-                );
-
-                my $Worktime = $EndTime - $StartTime;
-
-                if ( $Worktime >= 1 && $Worktime <= 7200 ) {
-        	        $AnswerTime2H ++;
-                }
-                if ( $Worktime >= 7201 && $Worktime <= 28800 ) {
-        	        $AnswerTime8H ++;
-                }
-                if ( $Worktime >= 28801 && $Worktime <= 86400 ) {
-        	        $AnswerTime1T ++;
-                }        
-                if ( $Worktime >= 86401 && $Worktime <= 259200 ) {
-        	        $AnswerTime3T ++;
-                }        
-                if ( $Worktime >= 259201 && $Worktime <= 432000 ) {
-        	        $AnswerTime5T ++;
-                }
-                if ( $Worktime >= 432001 && $Worktime <= 864000 ) {
-        	        $AnswerTime10T ++;
-                }
-                if ( $Worktime >= 864001 && $Worktime <= 2592000 ) {
-        	        $AnswerTime30T ++;
-                }
-                if ( $Worktime >= 2592001 ) {
-        	        $AnswerTime88 ++;
-                }
-            }
-        }
-    }
+    my $AnswerTime2H  = $AnswerTimeData{Buckets}->{AnswerTime2H}  || 0;
+    my $AnswerTime8H  = $AnswerTimeData{Buckets}->{AnswerTime8H}  || 0;
+    my $AnswerTime1T  = $AnswerTimeData{Buckets}->{AnswerTime1T}  || 0;
+    my $AnswerTime3T  = $AnswerTimeData{Buckets}->{AnswerTime3T}  || 0;
+    my $AnswerTime5T  = $AnswerTimeData{Buckets}->{AnswerTime5T}  || 0;
+    my $AnswerTime10T = $AnswerTimeData{Buckets}->{AnswerTime10T} || 0;
+    my $AnswerTime30T = $AnswerTimeData{Buckets}->{AnswerTime30T} || 0;
+    my $AnswerTime88  = $AnswerTimeData{Buckets}->{AnswerTime88}  || 0;
 
     $Param{'AnswerTime'} .= '{y: ' . $AnswerTime2H . ', label: "< 2 Stunden"},';
     $Param{'AnswerTime'} .= '{y: ' . $AnswerTime8H . ', label: "< 8 Stunden"},';
@@ -455,74 +367,24 @@ sub Run {
         $EndYearSearch   = "$StartYear-12-31 00:00:00";
     }
 
-    my $openTicketsJan  = 0;
-    my $openTicketsFeb  = 0;
-    my $openTicketsMar  = 0;
-    my $openTicketsApr  = 0;
-    my $openTicketsMai  = 0;
-    my $openTicketsJun  = 0;
-    my $openTicketsJul  = 0;
-    my $openTicketsAug  = 0;
-    my $openTicketsSept = 0;
-    my $openTicketsOkt  = 0;
-    my $openTicketsNov  = 0;
-    my $openTicketsDez  = 0;
-
-    my @openTicketsSearch = $TicketObject->TicketSearch(
-        Result                    => 'ARRAY',
-        TicketCreateTimeNewerDate => $StartYearSearch,
-        TicketCreateTimeOlderDate => $EndYearSearch,
-        UserID                    => 1,
+    my %CreatedClosedData = $KpiSucheObject->CreatedClosedTicketsByMonth(
+        Start  => $StartYearSearch,
+        End    => $EndYearSearch,
+        UserID => 1,
     );
 
-    for my $TicketID ( @openTicketsSearch ) {
-
-        my %Ticket = $TicketObject->TicketGet(
-            TicketID      => $TicketID,
-            DynamicFields => 0,
-            UserID        => 1,
-            Silent        => 0,
-        );
-
-        my @CreateSplit = split('-', $Ticket{Created});
-
-        if ( $CreateSplit[1] eq "01" ) {
-        	$openTicketsJan ++;
-        }
-        if ( $CreateSplit[1] eq "02" ) {
-        	$openTicketsFeb ++;
-        }
-        if ( $CreateSplit[1] eq "03" ) {
-        	$openTicketsMar ++;
-        }
-        if ( $CreateSplit[1] eq "04" ) {
-        	$openTicketsApr ++;
-        }
-        if ( $CreateSplit[1] eq "05" ) {
-        	$openTicketsMai ++;
-        }
-        if ( $CreateSplit[1] eq "06" ) {
-        	$openTicketsJun ++;
-        }
-        if ( $CreateSplit[1] eq "07" ) {
-        	$openTicketsJul ++;
-        }
-        if ( $CreateSplit[1] eq "08" ) {
-        	$openTicketsAug ++;
-        }
-        if ( $CreateSplit[1] eq "09" ) {
-        	$openTicketsSept ++;
-        }
-        if ( $CreateSplit[1] eq "10" ) {
-        	$openTicketsOkt ++;
-        }
-        if ( $CreateSplit[1] eq "11" ) {
-        	$openTicketsNov ++;
-        }
-        if ( $CreateSplit[1] eq "12" ) {
-        	$openTicketsDez ++;
-        }
-    }
+    my $openTicketsJan  = $CreatedClosedData{Created}->{'01'} || 0;
+    my $openTicketsFeb  = $CreatedClosedData{Created}->{'02'} || 0;
+    my $openTicketsMar  = $CreatedClosedData{Created}->{'03'} || 0;
+    my $openTicketsApr  = $CreatedClosedData{Created}->{'04'} || 0;
+    my $openTicketsMai  = $CreatedClosedData{Created}->{'05'} || 0;
+    my $openTicketsJun  = $CreatedClosedData{Created}->{'06'} || 0;
+    my $openTicketsJul  = $CreatedClosedData{Created}->{'07'} || 0;
+    my $openTicketsAug  = $CreatedClosedData{Created}->{'08'} || 0;
+    my $openTicketsSept = $CreatedClosedData{Created}->{'09'} || 0;
+    my $openTicketsOkt  = $CreatedClosedData{Created}->{'10'} || 0;
+    my $openTicketsNov  = $CreatedClosedData{Created}->{'11'} || 0;
+    my $openTicketsDez  = $CreatedClosedData{Created}->{'12'} || 0;
 
     $Param{'OpenTicketsYear'} .= '{label: "Jan", y: ' . $openTicketsJan . ',},';
     $Param{'OpenTicketsYear'} .= '{label: "Feb", y: ' . $openTicketsFeb . ',},';
@@ -537,75 +399,18 @@ sub Run {
     $Param{'OpenTicketsYear'} .= '{label: "Nov", y: ' . $openTicketsNov . ',},';
     $Param{'OpenTicketsYear'} .= '{label: "Dez", y: ' . $openTicketsDez . '}';
 
-
-    my $closeTicketsJan = 0;
-    my $closeTicketsFeb = 0;
-    my $closeTicketsMar = 0;
-    my $closeTicketsApr = 0;
-    my $closeTicketsMai = 0;
-    my $closeTicketsJun = 0;
-    my $closeTicketsJul = 0;
-    my $closeTicketsAug = 0;
-    my $closeTicketsSept = 0;
-    my $closeTicketsOkt = 0;
-    my $closeTicketsNov = 0;
-    my $closeTicketsDez = 0;
-
-    my @closeTicketsSearch = $TicketObject->TicketSearch(
-        Result                   => 'ARRAY',
-        TicketCloseTimeNewerDate => $StartYearSearch,
-        TicketCloseTimeOlderDate => $EndYearSearch,
-        UserID                   => 1,
-    );
-
-    for my $TicketID ( @closeTicketsSearch ) {
-
-        my %Ticket = $TicketObject->TicketGet(
-            TicketID      => $TicketID,
-            DynamicFields => 0,
-            UserID        => 1,
-            Silent        => 0,
-        );
-
-        my @CreateSplit = split('-', $Ticket{Changed});
-
-        if ( $CreateSplit[1] eq "01" ) {
-        	$closeTicketsJan ++;
-        }
-        if ( $CreateSplit[1] eq "02" ) {
-        	$closeTicketsFeb ++;
-        }
-        if ( $CreateSplit[1] eq "03" ) {
-        	$closeTicketsMar ++;
-        }
-        if ( $CreateSplit[1] eq "04" ) {
-        	$closeTicketsApr ++;
-        }
-        if ( $CreateSplit[1] eq "05" ) {
-        	$closeTicketsMai ++;
-        }
-        if ( $CreateSplit[1] eq "06" ) {
-        	$closeTicketsJun ++;
-        }
-        if ( $CreateSplit[1] eq "07" ) {
-        	$closeTicketsJul ++;
-        }
-        if ( $CreateSplit[1] eq "08" ) {
-        	$closeTicketsAug ++;
-        }
-        if ( $CreateSplit[1] eq "09" ) {
-        	$closeTicketsSept ++;
-        }
-        if ( $CreateSplit[1] eq "10" ) {
-        	$closeTicketsOkt ++;
-        }
-        if ( $CreateSplit[1] eq "11" ) {
-        	$closeTicketsNov ++;
-        }
-        if ( $CreateSplit[1] eq "12" ) {
-        	$closeTicketsDez ++;
-        }
-    }
+    my $closeTicketsJan  = $CreatedClosedData{Closed}->{'01'} || 0;
+    my $closeTicketsFeb  = $CreatedClosedData{Closed}->{'02'} || 0;
+    my $closeTicketsMar  = $CreatedClosedData{Closed}->{'03'} || 0;
+    my $closeTicketsApr  = $CreatedClosedData{Closed}->{'04'} || 0;
+    my $closeTicketsMai  = $CreatedClosedData{Closed}->{'05'} || 0;
+    my $closeTicketsJun  = $CreatedClosedData{Closed}->{'06'} || 0;
+    my $closeTicketsJul  = $CreatedClosedData{Closed}->{'07'} || 0;
+    my $closeTicketsAug  = $CreatedClosedData{Closed}->{'08'} || 0;
+    my $closeTicketsSept = $CreatedClosedData{Closed}->{'09'} || 0;
+    my $closeTicketsOkt  = $CreatedClosedData{Closed}->{'10'} || 0;
+    my $closeTicketsNov  = $CreatedClosedData{Closed}->{'11'} || 0;
+    my $closeTicketsDez  = $CreatedClosedData{Closed}->{'12'} || 0;
 
     $Param{'CloseTicketsYear'} .= '{label: "Jan", y: ' . $closeTicketsJan . ',},';
     $Param{'CloseTicketsYear'} .= '{label: "Feb", y: ' . $closeTicketsFeb . ',},';
@@ -619,7 +424,6 @@ sub Run {
     $Param{'CloseTicketsYear'} .= '{label: "Okt", y: ' . $closeTicketsOkt . ',},';
     $Param{'CloseTicketsYear'} .= '{label: "Nov", y: ' . $closeTicketsNov . ',},';
     $Param{'CloseTicketsYear'} .= '{label: "Dez", y: ' . $closeTicketsDez . '}';
-
 
     my $Output = $LayoutObject->Header();
     $Output .= $LayoutObject->NavigationBar();
